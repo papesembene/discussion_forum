@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TagController extends Controller
 {
@@ -12,7 +14,11 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $data = Tag::withCount('question')
+            ->orderBy('question_count','DESC')
+            ->get();
+        //return Inertia::render('Admin/Tag/TagList')->with(['data'=>$data]);
+
     }
 
     /**
@@ -28,7 +34,17 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+        $tag = Tag::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+        ]);
+        return response()->json([
+            'success'=> true,
+            'tag'=>$tag
+        ]);
     }
 
     /**
@@ -60,6 +76,9 @@ class TagController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Tag::where('id',$id)->delete();
+        return response()->json(
+            ['success'=>true]
+        );
     }
 }

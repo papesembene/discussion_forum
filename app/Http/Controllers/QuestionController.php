@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -27,7 +31,31 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'tags' => 'required',
+        ]);
+
+        $title = $request->title;
+        $description = $request->description;
+        $tagsArr = explode(',',$request->tags);
+
+        $Questiondata = [
+            'user_id' => Auth::user()->id,
+            'title' => $title,
+            'description' => $description,
+            'slug' => Str::slug($title).'-'.uniqid(),
+            'created_at' => Carbon::now(),
+        ];
+
+        $createdQuestion = Question::create($Questiondata);
+
+        $currentQuestion = Question::find($createdQuestion->id);
+        $currentQuestion->tag()->attach($tagsArr);
+
+        return redirect()->route('home')->with(['message'=>'Question created successfully']);
+
     }
 
     /**
@@ -59,6 +87,9 @@ class QuestionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Question::where('id',$id)->delete();
+        return response()->json([
+            'success'=> true,
+        ]);
     }
 }

@@ -2,63 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        if(Auth::check())
+        {
+            return back();
+        }
+       // return Inertia::render('Auth/Register');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required|confirmed|min:6',
+            'password_confirmation' =>'required',
+            'image' => 'required|mimes:jpeg,png,jpg',
+        ]);
+
+        $file = $request->file('image');
+        $newFileName = uniqid().'-'.$file->getClientOriginalName();
+        $file->move(public_path().'/uploads/users/',$newFileName);
+
+        User::create([
+            'name'=> $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'image' => $newFileName,
+        ]);
+
+        $credential = $request->only('email','password');
+        if(Auth::attempt($credential)){
+            return redirect()->route('home');
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function loginPage()
     {
-        //
+        if(Auth::check())
+        {
+            return back();
+        }
+       // return Inertia::render('Auth/Login');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function userLogin(Request $request)
     {
-        //
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+        $credential = $request->only('email','password');
+        if(Auth::attempt($credential)){
+            return redirect()->route('home');
+        }else{
+            return back()->with(['message'=>'Login ou mot de passe incorrect']);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function logout()
     {
-        //
+        Auth::logout();
+        return redirect()->route('login');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

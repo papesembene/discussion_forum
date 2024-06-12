@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Question;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -12,7 +13,9 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        //
+        $data = Question::with('user','tag','comment')->get();
+        //return Inertia::render('Admin/Question/QuestionList')->with(['data'=>$data]);
+
     }
 
     /**
@@ -60,6 +63,9 @@ class QuestionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Question::where('id',$id)->delete();
+        return response()->json([
+            'success'=>true
+        ]);
     }
 }

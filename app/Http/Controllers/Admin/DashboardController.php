@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Question;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -12,7 +16,15 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //
+        $questions = Question::with('user')
+            ->withCount('comment')
+            ->orderBy('id','DESC')->get();
+        $users = User::select(DB::raw('COUNT(id) as user_count'))
+            ->value('user_count');
+        $tags = Tag::select(DB::raw('COUNT(id) as tag_count'))
+            ->value('tag_count');
+       // return Inertia::render('Admin/Dashboard')->with(['questions'=>$questions,'users'=>$users,'tags'=>$tags]);
+
     }
 
     /**
