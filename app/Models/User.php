@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
@@ -16,10 +18,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'image',
+        'last_seen',
     ];
 
     /**
@@ -43,5 +48,36 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    protected $appends = ['onlineStatus'];
+
+    //questions
+    public function question()
+    {
+        return $this->hasMany(Question::class,'user_id','id');
+    }
+
+    //comment
+    public function comment()
+    {
+        return $this->hasMany(QuestionComment::class,'user_id','id');
+    }
+
+    //user online check
+    public function userOnlineCheck()
+    {
+        if(Cache::has('user-is-online-' . $this->id))
+        {
+            return 'online';
+        }else
+        {
+            return Carbon::parse($this->last_seen)->diffForHumans();
+        }
+    }
+
+    //added online status to user
+    public function getOnlineStatusAttribute()
+    {
+        return $this->userOnlineCheck();
     }
 }
