@@ -76,7 +76,7 @@ class QuestionController extends Controller
     {
         try {
             $question = Question::find($id);
-            $answers = $question->answers;
+            $answers = $question->comment;
             return response()->json([
                 'question' => $question,
                 'answers' => $answers,
