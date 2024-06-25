@@ -16,7 +16,7 @@ class QuestionController extends Controller
     {
         try {
             // recuperer les questions avec les tags et les reponses associees
-            $questions = Question::with('tags', 'answers')->get();
+            $questions = Question::all();
             return response()->json([
                 'questions' => $questions,
                 'message' => 'Donnees recuperees avec succes',
