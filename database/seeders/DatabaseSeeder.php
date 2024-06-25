@@ -42,21 +42,21 @@ class DatabaseSeeder extends Seeder
 
         //question
         Question::create([
-            'slug' => Str::slug("What is lorem ipsum"),
+            'body' => Str::slug("What is lorem ipsum"),
             'title' => 'What is Lorem Ipsum?',
             'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. At, voluptatum quam laboriosam placeat laudantium incidunt atque dicta voluptatibus ullam, aut, itaque reiciendis pariatur. Praesentium officia nostrum ex sunt, cum consectetur.",
             'user_id' => "1",
         ]);
 
         Question::create([
-            'slug' => Str::slug("What is Javascript"),
+            'body' => Str::slug("What is Javascript"),
             'title' => 'What is Javascript?',
             'description' => "Javascript dolor sit amet consectetur adipisicing elit. At, voluptatum quam laboriosam placeat laudantium incidunt atque dicta voluptatibus ullam, aut, itaque reiciendis pariatur. Praesentium officia nostrum ex sunt, cum consectetur.",
             'user_id' => "1",
         ]);
 
         Question::create([
-            'slug' => Str::slug("Vue js is a framework or library"),
+            'body' => Str::slug("Vue js is a framework or library"),
             'title' => 'Vue js is a framework or library?',
             'description' => "Javascript dolor sit amet consectetur adipisicing elit. At, voluptatum quam laboriosam placeat laudantium incidunt atque dicta voluptatibus ullam, aut, itaque reiciendis pariatur. Praesentium officia nostrum ex sunt, cum consectetur.",
             'user_id' => "1",
@@ -64,17 +64,17 @@ class DatabaseSeeder extends Seeder
 
         //tags
         Tag::create([
-            'slug' => Str::slug("Web Development"),
+
             'name' => "Web Development",
         ]);
 
         Tag::create([
-            'slug' => Str::slug("Javascript"),
+
             'name' => "Javascript",
         ]);
 
         Tag::create([
-            'slug' => Str::slug("Web Design"),
+
             'name' => "Web Design",
         ]);
 

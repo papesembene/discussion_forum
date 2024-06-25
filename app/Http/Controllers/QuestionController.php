@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
+use App\Models\QuestionComment;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -75,21 +76,26 @@ class QuestionController extends Controller
     public function show(string $id)
     {
         try {
-            $question = Question::find($id);
-            $answers = $question->comment;
+            $question = Question::with('tag', 'comment')->find($id);
+            if (!$question) {
+                return response()->json([
+                    'message' => 'Question non trouvée',
+                    'status' => 404
+                ], 404);
+            }
             return response()->json([
                 'question' => $question,
-                'answers' => $answers,
-                'message' => 'Donnees recuperees avec succes',
+                'message' => 'Données récupérées avec succès',
                 'status' => 200
             ], 200);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Erreur lors de la recuperation des donnees',
+                'message' => 'Erreur lors de la récupération des données',
                 'status' => 500
             ], 500);
         }
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -147,6 +153,34 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erreur lors de la suppression de la question',
+                'status' => 500
+            ], 500);
+        }
+    }
+
+    public function addComment(Request $request, string $id)
+    {
+        $request->validate([
+            'comment' => 'required|string',
+        ]);
+
+        try {
+            $question = Question::findOrFail($id);
+
+            $comment = QuestionComment::create([
+                'comment' => $request->input('comment'),
+                'user_id' => $request->user()->id,
+                'question_id' => $id,
+            ]);
+
+            return response()->json([
+                'comment' => $comment,
+                'message' => 'Commentaire ajouté avec succès',
+                'status' => 201
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erreur lors de l\'ajout du commentaire',
                 'status' => 500
             ], 500);
         }
